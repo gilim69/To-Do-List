@@ -1,43 +1,55 @@
 import React, { useState } from 'react'
 import './App.css';
 
-function App() {
-  const [info, setInfo] = useState(null);  // for helping staff output
-  const [task, setTask] = useState('');
-  const [tasklist, setTaskList] = useState([]);
+var taskListAll = [];
 
-  const newTask = () => {    
-      if (task !== '') {
-          const date = new Date();
-          const newTask = {
-              id: Math.floor(Math.random()*1000),
-              whatToDo: task,
-              isFinshed: false,
-          };
-          setTaskList([...tasklist, newTask]); 
-          setTask('');        
-      }
-  };
+function App() {
+  const [info, setInfo] = useState(0);  
+  const [task, setTask] = useState('');
+  const [taskList, setTaskList] = useState([]);
+  const [taskListViewMode, setTaskListViewMode] = useState(0);
 
   const inputNewTask = (ev) => {
-    setInfo(ev.keyCode);
-    if (ev.keyCode == 13) {
-        newTask();
-        ev.target.value='';
-    }
-    setTask(ev.target.value);
+    if (ev.keyCode === 13 && task !== '') {
+        // const date = new Date()
+        const newTask = {
+            id: Math.floor(Math.random()*1000),
+            whatToDo: task,
+            isFinshed: false
+        };
+        taskListAll = [...taskListAll, newTask];  
+        setTaskList(taskListAll);
+        setTasksView(taskListViewMode); 
+        setTask('');
+    };   
+    setInfo(taskListAll.length);
 };
 
   const setChecked = (id) => {
-    setInfo(id.toString());
-    const checkedElemInd = tasklist.findIndex((el) => el.id === id);
-    const newTaskList = [...tasklist];
-    newTaskList[checkedElemInd].isFinshed = !newTaskList[checkedElemInd].isFinshed;
-    setTaskList(newTaskList);
+      const checkedElemInd = taskList.findIndex((el) => el.id === id);
+      const newTaskList = [...taskList];
+      newTaskList[checkedElemInd].isFinshed = !newTaskList[checkedElemInd].isFinshed;
+      setTaskList(newTaskList);
+  };
+
+  const setTasksView = (mode) => {
+      setTaskListViewMode(mode);
+      if (mode === 1) {
+          setTaskList(taskListAll.filter((t) => !t.isFinshed));
+      }
+      else if (mode === 2) {
+          setTaskList(taskListAll.filter((t) => t.isFinshed));
+        }
+      else {
+          setTaskList(taskListAll);
+        };
   };
 
   const clearFinishedTasks = () => {
-      setTaskList(tasklist.filter((t) => !t.isFinshed));
+      taskListAll = taskListAll.filter((t) => !t.isFinshed);
+      setTaskListViewMode(0);
+      setTasksView(0);
+      setInfo(taskListAll.length);
     };
 
   return (
@@ -45,6 +57,25 @@ function App() {
           <h1>
               To Do List
           </h1>
+
+          <div className='menu'>
+                <button className={taskListViewMode===0? 'btn-disabled' : 'btn'} onClick={()=>setTasksView(0)}>
+                    All Tasks
+                </button>
+                
+                <button className={taskListViewMode===1? 'btn-disabled' : 'btn'} onClick={()=>setTasksView(1)}>
+                    Active
+                </button>
+                
+                <button className={taskListViewMode===2? 'btn-disabled' : 'btn'} onClick={()=>setTasksView(2)}>
+                    Finished
+                </button>
+
+                <button onClick={()=>clearFinishedTasks()}>
+                    Clear finished
+                </button>
+          </div>
+
           <div>
               <input className='input-new-task'
                   type='text'
@@ -57,29 +88,31 @@ function App() {
           </div>
 
           <br />
-          {tasklist !== [] ? (
+          {taskList !== [] ? (
               <ul className='task-list'>
-                  {tasklist.map((t) => (
+                  {taskList.map((t) => (
 
                        <li className={t.isFinshed ? 'task-finished' : 'task-active'}>
                           <span onClick={() => setChecked(t.id)}>
                               {(t.isFinshed)? '[ V ] ' : '[ ... ] '}
                           </span>
-                          <div>{t.whatToDo}</div>
+                          
+                          <input className='what-to-do'
+                              type='text'
+                              id={'inp-'+t.id}
+                              onChange={(ev) => setTask(ev.target.value)}
+                              onKeyUp={(ev) => inputNewTask(ev)}
+                              value={t.whatToDo}
+                              readOnly
+                          />
                       </li>
                   ))}
               </ul>
           ) : null}
-          <div className='footer'>
-              <button className='del-btn' onClick={clearFinishedTasks}>
-                  Clear finished
-              </button>
-          </div>
-          <p></p>
-          <p></p>
-          <div>{info}</div>
+
+          <div className='info'>Всего задач: {info}</div>
       </div>
   );
-}
+};
 
 export default App;
