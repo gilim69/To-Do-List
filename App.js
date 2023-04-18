@@ -6,13 +6,20 @@ var taskListAll = []; // All active and finished tasks list
 
 function App() {
 
+    function ShowSpan (props) {
+        return (
+            <span className='task-text' onDoubleClick={()=>setTask1([props.id, true])}>
+                    {props.txt}
+            </span>
+        )
+    };
     function ShowEdit () {
         const ind = taskList.findIndex((el) => el.id === taskId);
         const newTaskList = [...taskList];
         setTask1(taskList[ind].whatToDo);
 
-        const endEdit = (txt) => {
-            newTaskList[ind].whatToDo=txt;
+        const endEdit = () => {
+            newTaskList[ind].whatToDo=task1;
             setTaskList(newTaskList);
             setTask1('');
             setTaskId(0);
@@ -21,13 +28,12 @@ function App() {
         return (
             <input key={Math.floor(Math.random()*1000)} 
                 type='text'
-              //  value = {task1}
+                value = {task1}
                 className='task-text-edit' 
-                //onChange={ ev => setTask1('ev.target.value')}
-                onKeyUp={ ev => (ev.keyCode===13)? endEdit(ev.target.value): null}
-                onBlur= { ev => endEdit(ev.target.value)}
+                onChange={ ev => setTask1('ev.target.value')}
+                onKeyUp={ ev => (ev.keyCode===13)? endEdit(): ev.keyCode}
+                onBlur= { () => endEdit()}
                 autoComplete="off"
-                defaultValue={taskList[ind].whatToDo}
                 autoFocus='on'>
             </input>
         )
@@ -97,24 +103,21 @@ function App() {
             </h1>
 
             <div className='menu'>
-                <button className={taskListViewMode===0? 'btn-disabled' : 'btn'} 
-                    onClick={()=>setTasksView(0)}>
-                        All Tasks
-                </button>
+                  <button className={taskListViewMode===0? 'btn-disabled' : 'btn'} onClick={()=>setTasksView(0)}>
+                      All Tasks
+                  </button>
                   
-                <button className={taskListViewMode===1? 'btn-disabled' : 'btn'} 
-                    onClick={()=>setTasksView(1)}>
-                        Active
-                </button>
+                  <button className={taskListViewMode===1? 'btn-disabled' : 'btn'} onClick={()=>setTasksView(1)}>
+                      Active
+                  </button>
                   
-                <button className={taskListViewMode===2? 'btn-disabled' : 'btn'} 
-                    onClick={()=>setTasksView(2)}>
-                        Finished
-                </button>
+                  <button className={taskListViewMode===2? 'btn-disabled' : 'btn'} onClick={()=>setTasksView(2)}>
+                      Finished
+                  </button>
 
-                <button className='btn' onClick={()=>clearFinishedTasks()}>
-                        Clear finished
-                </button>
+                  <button className='btn' onClick={()=>clearFinishedTasks()}>
+                      Clear finished
+                  </button>
             </div>
 
             <div>
@@ -141,12 +144,14 @@ function App() {
                             </span>
                             
 
-                            {(taskId===t.id)? <ShowEdit /> :
+                            {(taskId===t.id)? 
+                                <ShowEdit /> 
+                                : 
                                 <div className='task-text' 
                                     onDoubleClick={()=>setTaskId(t.id)}>
-                                    {t.whatToDo} 
+                                    {t.whatToDo} == {t.id} == {task1} == {taskId}
                                 </div>
-                            }
+                                }
 
                             <span className='del-task' onClick={()=>deleteTask(t.id)}>
                                 X

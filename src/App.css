@@ -31,6 +31,7 @@ h1 {
   border-bottom-width: 5px;
   border-right-width: 5px;
   width: 98%;
+  white-space: nowrap;
 }
 
 .task-list {
@@ -42,7 +43,7 @@ h1 {
   border-right-color: grey;
   border-bottom-width: 5px;
   border-right-width: 5px;
-  padding: 20px;
+  padding: 10px;
   min-height: 200px;
   max-height: 100%;
 }
@@ -55,6 +56,10 @@ h1 {
   border-style: none;
   vertical-align: middle;
   border-bottom-style: groove;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .task-finished {
@@ -75,10 +80,21 @@ h1 {
 
 .status img {
   height: 90%;
+  float: left;
 }
 
 .task-text {
+  display: inline-block;
+  vertical-align: middle;
+}
 
+.task-text-edit {
+  width: 90%;
+  height: 98%;
+  display: inline;
+  padding: 0px;
+  margin: 0px;
+  white-space: nowrap;
 }
 
 .del-task {
